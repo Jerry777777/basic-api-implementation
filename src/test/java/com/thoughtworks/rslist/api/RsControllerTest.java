@@ -95,12 +95,13 @@ class RsControllerTest {
 
     @Test
     void should_update_one_event() throws Exception {
+        int updateIndex = 1;
         RsEvent rsEvent = new RsEvent("第一条事件","教育");
 
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventString = objectMapper.writeValueAsString(rsEvent);
 
-        mockMvc.perform(put("/rs/update").content(rsEventString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(put("/rs/update/{index}", updateIndex).content(rsEventString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/rs/1"))
