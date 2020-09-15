@@ -9,8 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -91,6 +90,22 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[1].keyWord",is("社会")))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyWord",is("民生")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_update_one_event() throws Exception {
+        RsEvent rsEvent = new RsEvent("第一条事件","教育");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventString = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(put("/rs/update").content(rsEventString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/rs/1"))
+                .andExpect(jsonPath("$.eventName", is("第一条事件")))
+                .andExpect(jsonPath("$.keyWord", is("教育")))
                 .andExpect(status().isOk());
     }
 }

@@ -40,4 +40,15 @@ public class RsController {
         RsEvent rsEvent = objectMapper.readValue(rsEventString, RsEvent.class);
         rsList.add(rsEvent);
     }
+
+    @PutMapping("/rs/update")
+    public void updateRsEvent(@RequestBody String rsEventString) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        RsEvent rsEventUpdate = objectMapper.readValue(rsEventString, RsEvent.class);
+
+        rsList.forEach(rsEvent -> {
+            if (rsEvent.getEventName().equals(rsEventUpdate.getEventName()))
+                rsEvent.setKeyWord(rsEventUpdate.getKeyWord());
+        });
+    }
 }
