@@ -10,7 +10,7 @@
 #### 需求4、5详细描述
 
 * 需求4： 修改某条事件时（通过参数传递的序号，修改列表中对应的事件数据），如果RequestBody只传了eventName没有传keyword那么仅仅只修改eventName
-         如果只传了keyword没有传eventName，那么只修改keyword字段
+         如果只传了keyword没有传eventame，那么只修改keyword字段
          如果两个字段都传了，那么都进行修改
          
 * 需求5： 通过参数传递的序号，删除列表中对应的某条事件数据
