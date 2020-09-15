@@ -53,4 +53,9 @@ public class RsController {
             rsList.get(index-1).setKeyWord(rsEventUpdate.getKeyWord());
         }
     }
+
+    @DeleteMapping("/rs/delete/{index}")
+    public void deleteRsEventByIndex(@PathVariable int index) throws JsonProcessingException {
+        rsList.remove(index-1);
+    }
 }
