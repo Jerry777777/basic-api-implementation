@@ -1,10 +1,9 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 public class RsController {
     private List<RsEvent> rsList = initList();
 
-    private List<RsEvent> initList(){
+    private List<RsEvent> initList() {
         List<RsEvent> list = new ArrayList<>();
         list.add(new RsEvent("第一条事件", "经济"));
         list.add(new RsEvent("第二条事件", "社会"));
@@ -24,7 +23,7 @@ public class RsController {
     @GetMapping("/rs/list")
     public List<RsEvent> getList(@RequestParam(required = false) Integer start,
                                  @RequestParam(required = false) Integer end) {
-        if (null == start || null == end){
+        if (null == start || null == end) {
             return rsList;
         }
         return rsList.subList(start - 1, end);
@@ -33,5 +32,12 @@ public class RsController {
     @GetMapping("/rs/{index}")
     public RsEvent getOne(@PathVariable int index) {
         return rsList.get(index - 1);
+    }
+
+    @PostMapping("/rs/add")
+    public void addOneEvent(@RequestBody String rsEventString) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        RsEvent rsEvent = objectMapper.readValue(rsEventString, RsEvent.class);
+        rsList.add(rsEvent);
     }
 }
