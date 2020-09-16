@@ -1,8 +1,11 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.exception.CommonError;
+import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.service.RsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +19,9 @@ public class RsController {
 
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getList(@RequestParam(required = false) Integer start,
-                                                 @RequestParam(required = false) Integer end) {
+                                                 @RequestParam(required = false) Integer end) throws InvalidRequestParamException {
+        if (start > end)
+            throw new InvalidRequestParamException("invalid request param");
         if (null == start || null == end) {
             return ResponseEntity.ok().body(rsService.getAllRs());
         }
@@ -48,5 +53,16 @@ public class RsController {
     public ResponseEntity<String> deleteRsEventById(@PathVariable int id) {
         rsService.deleteEventById(id);
         return ResponseEntity.ok().body(null);
+    }
+
+    @ExceptionHandler({InvalidRequestParamException.class})
+    public ResponseEntity exceptionHandler(Exception ex){
+        String errorMessage = null;
+        CommonError commonError = new CommonError();
+        if (ex instanceof InvalidRequestParamException){
+            errorMessage = ex.getMessage();
+        }
+        commonError.setError(errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonError);
     }
 }
