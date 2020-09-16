@@ -5,12 +5,19 @@ import com.thoughtworks.rslist.repositories.UserListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     @Autowired
-    UserListRepository userListRepository;
+    UserListRepository userRepository;
 
-    public void addOne(User user){
-        userListRepository.addUser(user);
+    public void addOne(User user) {
+        userRepository.addUser(user);
+    }
+
+    public List<User> getAllUsers() {
+        List<User> userList = userRepository.getUserList();
+        return userList;
     }
 }

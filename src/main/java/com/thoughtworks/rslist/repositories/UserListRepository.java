@@ -28,11 +28,12 @@ public class UserListRepository {
     }
 
     public void addUser(User user){
-        if (isExist(user))
+        if (!isExist(user))
             userList.add(user);
     }
 
     public boolean isExist(User user){
-        return userList.stream().filter(us->us.equals(user)).count() > 0;
+        long count = userList.stream().filter(us -> us.equals(user)).count();
+        return count > 0;
     }
 }
