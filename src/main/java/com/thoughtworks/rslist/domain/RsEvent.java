@@ -10,6 +10,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class RsEvent {
     @NotNull
+    private int id;
+
+    @NotNull
     private String eventName;
 
     @NotNull
@@ -19,10 +22,19 @@ public class RsEvent {
     @NotNull
     private User user;
 
-    public RsEvent(String eventName, String keyWord, User user) {
+    public RsEvent(int id, String eventName, String keyWord, User user) {
+        this.id = id;
         this.eventName = eventName;
         this.keyWord = keyWord;
         this.user = user;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEventName() {

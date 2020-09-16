@@ -1,12 +1,11 @@
 package com.thoughtworks.rslist.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.domain.Gender;
-import com.thoughtworks.rslist.repositories.UserListRepositories;
+import com.thoughtworks.rslist.repositories.UserListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -17,13 +16,13 @@ public class RsController {
     private List<RsEvent> rsList = initList();
 
     @Autowired
-    private UserListRepositories userListRepositories;
+    private UserListRepository userListRepository;
 
     private List<RsEvent> initList() {
         List<RsEvent> list = new ArrayList<>();
-        list.add(new RsEvent("第一条事件", "经济", new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890")));
-        list.add(new RsEvent("第二条事件", "社会", new User("userB", Gender.FEMALE, 32, "B@aaa.com", "11234567891")));
-        list.add(new RsEvent("第三条事件", "民生", new User("userC", Gender.Transgender, 21, "C@aaa.com", "11234567892")));
+        list.add(new RsEvent(1,"第一条事件", "经济", new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890")));
+        list.add(new RsEvent(2,"第二条事件", "社会", new User("userB", Gender.FEMALE, 32, "B@aaa.com", "11234567891")));
+        list.add(new RsEvent(3,"第三条事件", "民生", new User("userC", Gender.Transgender, 21, "C@aaa.com", "11234567892")));
         return list;
     }
 
@@ -42,27 +41,27 @@ public class RsController {
     }
 
     @PostMapping("/rs/add")
-    public void addOneEvent(@RequestBody String rsEventString) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        RsEvent rsEvent = objectMapper.readValue(rsEventString, RsEvent.class);
+    public void addOneEvent(@RequestBody @Validated RsEvent rsEvent) {
+        User user = rsEvent.getUser();
+        if (!userListRepository.isExist(user))
+            userListRepository.addUser(user);
         rsList.add(rsEvent);
     }
 
-    @PutMapping("/rs/update/{index}")
-    public void updateRsEvent(@PathVariable int index ,@RequestBody String rsEventString) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        RsEvent rsEventUpdate = objectMapper.readValue(rsEventString, RsEvent.class);
+    @PutMapping("/rs/update/{id}")
+    public void updateRsEventByIndex(@PathVariable int id, @RequestBody RsEvent rsEventUpdate) {
 
         if (rsEventUpdate.getEventName() != null) {
-            rsList.get(index-1).setEventName(rsEventUpdate.getEventName());
+            rsList.get(id-1).setEventName(rsEventUpdate.getEventName());
         }
         if (rsEventUpdate.getKeyWord() != null) {
-            rsList.get(index-1).setKeyWord(rsEventUpdate.getKeyWord());
+            rsList.get(id-1).setKeyWord(rsEventUpdate.getKeyWord());
         }
     }
 
-    @DeleteMapping("/rs/delete/{index}")
-    public void deleteRsEventByIndex(@PathVariable int index) throws JsonProcessingException {
-        rsList.remove(index-1);
+    @DeleteMapping("/rs/delete/{id}")
+    public void deleteRsEventByIndex(@PathVariable int id) {
+        if (id <= rsList.size())
+            rsList.remove(id - 1);
     }
 }
