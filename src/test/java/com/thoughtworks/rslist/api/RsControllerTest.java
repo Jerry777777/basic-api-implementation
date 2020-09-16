@@ -188,7 +188,7 @@ class RsControllerTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     void should_return_bad_request_when_add_new_event_user_is_empty() throws Exception {
         RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际", null);
 
