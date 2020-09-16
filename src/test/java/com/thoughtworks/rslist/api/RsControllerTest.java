@@ -1,7 +1,9 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.domain.Gender;
 import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +83,7 @@ class RsControllerTest {
 
     @Test
     void should_add_one_event() throws Exception {
-        RsEvent rsEvent = new RsEvent("第四条事件", "国际");
+        RsEvent rsEvent = new RsEvent("第四条事件", "国际", new User("UserD", Gender.MALE, 43, "D@aaa.com", "11234567893"));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
@@ -102,7 +104,7 @@ class RsControllerTest {
     @Test
     void should_update_one_event() throws Exception {
         int updateIndex = 1;
-        RsEvent rsEvent = new RsEvent("第一条事件","教育");
+        RsEvent rsEvent = new RsEvent("第一条事件","教育", null);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String rsEventString = objectMapper.writeValueAsString(rsEvent);
