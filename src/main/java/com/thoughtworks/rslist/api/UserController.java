@@ -14,15 +14,15 @@ import java.util.List;
 @RestController
 public class UserController {
     @Autowired
-    private UserListRepository userListRepository;
+    private UserListRepository userRepository;
 
     @PostMapping("/rs/addUser")
     public void addOne(@RequestBody @Validated User user){
-        userListRepository.addUser(user);
+        userRepository.addUser(user);
     }
 
     @GetMapping("/rs/getUserList")
     public List<User> getUserList(){
-        return userListRepository.getUserList();
+        return userRepository.getUserList();
     }
 }
