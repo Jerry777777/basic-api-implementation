@@ -1,8 +1,6 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.RsEvent;
-import com.thoughtworks.rslist.repositories.RsEventRepository;
-import com.thoughtworks.rslist.repositories.UserListRepository;
 import com.thoughtworks.rslist.service.RsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +24,11 @@ public class RsController {
     }
 
     @GetMapping("/rs/{index}")
-    public RsEvent getOne(@PathVariable int index) {
+    public ResponseEntity<RsEvent> getOne(@PathVariable int index) {
         if (index > 0)
-            return rsService.getOne(index);
+            return ResponseEntity.ok().body(rsService.getOne(index));
         else
-            return null;
+            return ResponseEntity.ok().body(null);
     }
 
     @PostMapping("/rs/add")
