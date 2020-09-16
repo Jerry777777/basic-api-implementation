@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -26,7 +26,12 @@ class UserControllerTest {
     void should_return_all_user() throws Exception {
         mockMvc.perform(get("/rs/getUserList"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(3)));
+                .andExpect(jsonPath("$.*", hasSize(3)))
+                .andExpect(jsonPath("$[0]", hasKey("user_name")))
+                .andExpect(jsonPath("$[0]", hasKey("user_age")))
+                .andExpect(jsonPath("$[0]", hasKey("user_gender")))
+                .andExpect(jsonPath("$[0]", hasKey("user_email")))
+                .andExpect(jsonPath("$[0]", hasKey("user_phone")));
     }
 
 
