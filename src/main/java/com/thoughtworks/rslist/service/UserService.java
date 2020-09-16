@@ -12,8 +12,8 @@ public class UserService {
     @Autowired
     UserListRepository userRepository;
 
-    public void addOne(User user) {
-        userRepository.addUser(user);
+    public int addOne(User user) {
+        return userRepository.addUser(user);
     }
 
     public List<User> getAllUsers() {

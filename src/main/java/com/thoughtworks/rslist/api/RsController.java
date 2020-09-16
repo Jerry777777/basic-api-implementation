@@ -1,8 +1,6 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.RsEvent;
-import com.thoughtworks.rslist.domain.User;
-import com.thoughtworks.rslist.domain.Gender;
 import com.thoughtworks.rslist.repositories.RsEventRepository;
 import com.thoughtworks.rslist.repositories.UserListRepository;
 import com.thoughtworks.rslist.service.RsService;
@@ -10,19 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class RsController {
     @Autowired
-    private RsEventRepository rsEventRepository;
-
-    @Autowired
     private RsService rsService;
-
-    @Autowired
-    private UserListRepository userListRepository;
 
     @GetMapping("/rs/list")
     public List<RsEvent> getList(@RequestParam(required = false) Integer start,

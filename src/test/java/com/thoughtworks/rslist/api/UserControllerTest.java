@@ -23,15 +23,24 @@ class UserControllerTest {
     MockMvc mockMvc;
 
     @Test
+    void should_return_all_user() throws Exception {
+        mockMvc.perform(get("/rs/getUserList"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(3)));
+    }
+
+
+    @Test
     void should_add_user() throws Exception {
         User user = new User("zhangsan", Gender.MALE, 20, "a@b.com", "11234567890");
         ObjectMapper objectMapper = new ObjectMapper();
         String userString = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/rs/addUser").content(userString).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(header().string("addIndex", "4"));
 
         mockMvc.perform(get("/rs/getUserList"))
-                .andExpect(jsonPath("$.*", hasSize(3)));
+                .andExpect(jsonPath("$.*", hasSize(4)));
     }
 
     @Test

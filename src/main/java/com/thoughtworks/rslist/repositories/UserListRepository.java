@@ -27,9 +27,10 @@ public class UserListRepository {
         this.userList = userList;
     }
 
-    public void addUser(User user){
+    public int addUser(User user){
         if (!isExist(user))
             userList.add(user);
+        return userList.size();
     }
 
     public boolean isExist(User user){
