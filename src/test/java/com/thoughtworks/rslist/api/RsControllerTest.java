@@ -161,5 +161,17 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.*", hasSize(3)));
     }
 
+    @Test
+    @Order(8)
+    void should_return_bad_request_when_add_new_event_eventName_is_empty() throws Exception {
+        RsEvent rsEvent = new RsEvent(4, null, "国际",
+                new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
 
