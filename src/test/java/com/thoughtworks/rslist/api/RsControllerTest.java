@@ -173,5 +173,18 @@ class RsControllerTest {
         mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @Order(9)
+    void should_return_bad_request_when_add_new_event_keyWord_is_empty() throws Exception {
+        RsEvent rsEvent = new RsEvent(4, "第四条事件", null,
+                new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
 
