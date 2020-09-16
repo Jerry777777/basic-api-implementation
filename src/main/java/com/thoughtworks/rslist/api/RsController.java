@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.domain.Gender;
+import com.thoughtworks.rslist.repositories.UserListRepositories;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -13,6 +15,9 @@ import java.util.List;
 @RestController
 public class RsController {
     private List<RsEvent> rsList = initList();
+
+    @Autowired
+    private UserListRepositories userListRepositories;
 
     private List<RsEvent> initList() {
         List<RsEvent> list = new ArrayList<>();

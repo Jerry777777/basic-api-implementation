@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
-// use jackson must have no args constructor
 @NoArgsConstructor
 public class RsEvent {
     @NotNull

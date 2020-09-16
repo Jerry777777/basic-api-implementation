@@ -31,7 +31,7 @@ class UserControllerTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/rs/getUserList"))
-                .andExpect(jsonPath("$.*", hasSize(1)));
+                .andExpect(jsonPath("$.*", hasSize(3)));
     }
 
     @Test
