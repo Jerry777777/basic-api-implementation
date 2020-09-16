@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.exception.CommonError;
+import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.service.RsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,9 @@ public class RsController {
     }
 
     @GetMapping("/rs/{index}")
-    public ResponseEntity<RsEvent> getOne(@PathVariable int index) {
+    public ResponseEntity<RsEvent> getOne(@PathVariable int index) throws InvalidIndexException {
+        if (index < 0)
+            throw new InvalidIndexException("invalid index");
         if (index > 0)
             return ResponseEntity.ok().body(rsService.getOne(index));
         else
@@ -55,13 +58,10 @@ public class RsController {
         return ResponseEntity.ok().body(null);
     }
 
-    @ExceptionHandler({InvalidRequestParamException.class})
+    @ExceptionHandler({InvalidRequestParamException.class, InvalidIndexException.class})
     public ResponseEntity exceptionHandler(Exception ex){
-        String errorMessage = null;
         CommonError commonError = new CommonError();
-        if (ex instanceof InvalidRequestParamException){
-            errorMessage = ex.getMessage();
-        }
+        String errorMessage = ex.getMessage();
         commonError.setError(errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonError);
     }

@@ -240,5 +240,26 @@ class RsControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid request param")));
     }
+
+    @Test
+    void should_return_400_when_get_sub_list_start_out_of_bound() throws Exception {
+        mockMvc.perform(get("/rs/list?start=5&end=1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @Test
+    void should_return_400_when_get_sub_list_end_out_of_bound() throws Exception {
+        mockMvc.perform(get("/rs/list?start=1&end=7"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @Test
+    void should_return_400_when_get_one_index_out_of_bound() throws Exception {
+        mockMvc.perform(get("/rs/7"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid index")));
+    }
 }
 

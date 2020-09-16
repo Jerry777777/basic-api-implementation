@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.repositories.RsEventRepository;
 import com.thoughtworks.rslist.repositories.UserListRepository;
@@ -30,7 +31,10 @@ public class RsService {
         return rsRepository.getRsList().subList(start - 1, end);
     }
 
-    public RsEvent getOne(int index) {
+    public RsEvent getOne(int index) throws InvalidIndexException {
+        List<RsEvent> rsList = rsRepository.getRsList();
+        if (index < 0 || index > rsList.size())
+            throw new InvalidIndexException("invalid index");
         return rsRepository.getOne(index);
     }
 
