@@ -29,11 +29,11 @@ public class RsService {
         return rsRepository.getOne(index);
     }
 
-    public void addOneEvent(RsEvent rsEvent) {
+    public int addOneEvent(RsEvent rsEvent) {
         User user = rsEvent.getUser();
         if (!userRepository.isExist(user))
             userRepository.addUser(user);
-        rsRepository.getRsList().add(rsEvent);
+        return rsRepository.addEvent(rsEvent);
     }
 
     public void updateEventById(int id, RsEvent rsEventUpdate) {

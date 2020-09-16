@@ -16,8 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -93,7 +92,8 @@ class RsControllerTest {
         String rsEventJson = objectMapper.writeValueAsString(rsEvent);
 
         mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(header().string("addIndex", "4"));
 
         mockMvc.perform(get("/rs/list"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))

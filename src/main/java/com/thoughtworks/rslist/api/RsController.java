@@ -32,8 +32,10 @@ public class RsController {
     }
 
     @PostMapping("/rs/add")
-    public void addOneEvent(@RequestBody @Validated RsEvent rsEvent) {
-        rsService.addOneEvent(rsEvent);
+    public ResponseEntity addOneEvent(@RequestBody @Validated RsEvent rsEvent) {
+        int addIndex = rsService.addOneEvent(rsEvent);
+        return ResponseEntity.created(null)
+                .header("addIndex", String.valueOf(addIndex)).build();
     }
 
     @PutMapping("/rs/update/{id}")

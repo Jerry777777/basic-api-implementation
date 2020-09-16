@@ -46,4 +46,9 @@ public class RsEventRepository {
         if (id <= rsList.size())
             rsList.remove(id - 1);
     }
+
+    public int addEvent(RsEvent rsEvent){
+        rsList.add(rsEvent);
+        return rsList.size();
+    }
 }
