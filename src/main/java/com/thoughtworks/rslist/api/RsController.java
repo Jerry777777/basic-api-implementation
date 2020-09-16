@@ -32,19 +32,21 @@ public class RsController {
     }
 
     @PostMapping("/rs/add")
-    public ResponseEntity addOneEvent(@RequestBody @Validated RsEvent rsEvent) {
+    public ResponseEntity<String> addOneEvent(@RequestBody @Validated RsEvent rsEvent) {
         int addIndex = rsService.addOneEvent(rsEvent);
         return ResponseEntity.created(null)
                 .header("addIndex", String.valueOf(addIndex)).build();
     }
 
     @PutMapping("/rs/update/{id}")
-    public void updateRsEventByIndex(@PathVariable int id, @RequestBody RsEvent rsEventUpdate) {
+    public ResponseEntity <String> updateRsEventById(@PathVariable int id, @RequestBody RsEvent rsEventUpdate) {
         rsService.updateEventById(id, rsEventUpdate);
+        return ResponseEntity.ok().body(null);
     }
 
     @DeleteMapping("/rs/delete/{id}")
-    public void deleteRsEventByIndex(@PathVariable int id) {
+    public ResponseEntity<String> deleteRsEventById(@PathVariable int id) {
         rsService.deleteEventById(id);
+        return ResponseEntity.ok().body(null);
     }
 }
