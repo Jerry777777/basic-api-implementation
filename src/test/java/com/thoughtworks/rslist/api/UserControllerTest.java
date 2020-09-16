@@ -33,4 +33,13 @@ class UserControllerTest {
         mockMvc.perform(get("/rs/getUserList"))
                 .andExpect(jsonPath("$.*", hasSize(1)));
     }
+
+    @Test
+    void should_return_bad_request_when_userName_to_long() throws Exception {
+        User user = new User("zhangsanisgood", Gender.MALE, 20, "a@b.com", "11234567890");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userString = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addUser").content(userString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

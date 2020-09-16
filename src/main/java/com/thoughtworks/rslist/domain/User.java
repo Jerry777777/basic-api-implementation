@@ -3,9 +3,12 @@ package com.thoughtworks.rslist.domain;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Size;
+
 @Data
 @NoArgsConstructor
 public class User {
+    @Size(max = 8)
     private String name;
     private Gender gender;
     private int age;
