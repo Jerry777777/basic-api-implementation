@@ -78,4 +78,13 @@ class UserControllerTest {
         mockMvc.perform(post("/rs/addUser").content(userString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void should_return_bad_request_when_phone_not_right() throws Exception {
+        User user = new User("zhangsan", Gender.MALE, 20, "a@b.com", "112345678");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userString = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addUser").content(userString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
