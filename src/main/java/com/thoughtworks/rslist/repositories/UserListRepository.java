@@ -34,7 +34,6 @@ public class UserListRepository {
     }
 
     public boolean isExist(User user){
-        long count = userList.stream().filter(us -> us.equals(user)).count();
-        return count > 0;
+        return userList.contains(user);
     }
 }

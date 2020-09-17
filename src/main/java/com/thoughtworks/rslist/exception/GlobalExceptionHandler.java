@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     private static final String INVALID_REQUEST_PARAM_ERROR_MESSAGE = "invalid request param";
     private static final String INVALID_INDEX_ERROR_MESSAGE = "invalid index";
-//    private static final String INVALID_REQUEST_PARAM_ERROR_MESSAGE = "invalid request param";
+    private static final String INVALID_POST_PARAM_ERROR_MESSAGE = "invalid param";
 
-    @ExceptionHandler({InvalidRequestParamException.class, InvalidIndexException.class})
+    @ExceptionHandler({InvalidRequestParamException.class, InvalidIndexException.class,  InvalidPostParam.class})
     public ResponseEntity exceptionHandler(Exception ex){
         CommonError commonError = new CommonError();
         String errorMessage = null;
@@ -19,6 +19,8 @@ public class GlobalExceptionHandler {
             errorMessage = INVALID_REQUEST_PARAM_ERROR_MESSAGE;
         else if (ex instanceof InvalidIndexException)
             errorMessage = INVALID_INDEX_ERROR_MESSAGE;
+        else if (ex instanceof InvalidPostParam)
+            errorMessage = INVALID_POST_PARAM_ERROR_MESSAGE;
         commonError.setError(errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonError);
     }

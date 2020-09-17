@@ -96,18 +96,18 @@ class RsControllerTest {
     @Test
     @Order(4)
     void should_add_one_event_with_new_user() throws Exception {
-        RsEvent rsEvent = new RsEvent(4,"第四条事件", "国际", new User("UserD", Gender.MALE, 43, "D@aaa.com", "11234567893"));
+        /*RsEvent rsEvent = new RsEvent(4,"第四条事件", "国际", new User("UserD", Gender.MALE, 43, "D@aaa.com", "11234567893"));
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();*/
         String rsEventJson = "{\"id\":4,\"eventName\":\"第四条事件\",\"keyWord\":\"国际\"," +
-                "\"user\":{\"name\":\"UserD\",\"gender\":\"MALE\",\"age\":43," +
-                "\"email\":\"D@aaa.com\",\"phone\":\"11234567893\"}}";
+                "\"user\":{\"user_name\":\"UserD\",\"user_gender\":\"MALE\",\"user_age\":43," +
+                "\"user_email\":\"D@aaa.com\",\"user_phone\":\"11234567893\"}}";
 
         mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("addIndex", "4"));
 
-        mockMvc.perform(get("/rs/getUserList"))
+        mockMvc.perform(get("/rs/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(4)));
 
@@ -158,14 +158,18 @@ class RsControllerTest {
     @Test
     @Order(7)
     void should_add_one_event_with_exited_user() throws Exception {
-        RsEvent rsEvent = new RsEvent(4,"第四条事件", "国际",
+        /*RsEvent rsEvent = new RsEvent(4,"第四条事件", "国际",
                 new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":\"第四条事件\",\"keyWord\":\"国际\"," +
+                "\"user\":{\"user_name\":\"userA\",\"user_gender\":\"MALE\",\"user_age\":39," +
+                "\"user_email\":\"A@aaa.com\",\"user_phone\":\"11234567890\"}}";
 
         mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(get("/rs/list"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
@@ -179,21 +183,28 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[2]", hasKey("user")))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/rs/getUserList"))
+        mockMvc.perform(get("/rs/users"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(3)));
     }
 
     @Test
     @Order(8)
     void should_return_bad_request_when_add_new_event_eventName_is_empty() throws Exception {
-        RsEvent rsEvent = new RsEvent(4, null, "国际",
+       /*RsEvent rsEvent = new RsEvent(4, null, "国际",
                 new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":null,\"keyWord\":\"国际\"," +
+                "\"user\":{\"user_name\":\"userA\",\"user_gender\":\"MALE\",\"user_age\":39," +
+                "\"user_email\":\"A@aaa.com\",\"user_phone\":\"11234567890\"}}";
+
 
         mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
     }
 
     @Test
@@ -260,6 +271,12 @@ class RsControllerTest {
         mockMvc.perform(get("/rs/7"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid index")));
+    }
+
+    @Test
+    void should_return_400_when_add_rsEvent_param_valid_fail(){
+
+//        mockMvc.perform(post("/rs/event"))
     }
 }
 
