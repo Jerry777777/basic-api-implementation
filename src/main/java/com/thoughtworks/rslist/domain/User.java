@@ -12,15 +12,20 @@ import java.util.Objects;
 public class User {
     @NotNull
     @Size(max = 8)
+    @JsonProperty("user_name")
     private String name;
     @NotNull
+    @JsonProperty("user_gender")
     private Gender gender;
     @Min(18)
     @Max(100)
+    @JsonProperty("user_age")
     private int age;
     @Email
+    @JsonProperty("user_email")
     private String email;
     @Pattern(regexp = "1\\d{10}")
+    @JsonProperty("user_phone")
     private String phone;
 
     public User(String name, Gender gender, int age, String email, String phone) {
@@ -45,7 +50,6 @@ public class User {
         return Objects.hash(name, gender, age, email, phone);
     }
 
-    @JsonProperty("user_name")
     public String getName() {
         return name;
     }
@@ -54,7 +58,6 @@ public class User {
         this.name = name;
     }
 
-    @JsonProperty("user_gender")
     public Gender getGender() {
         return gender;
     }
@@ -63,7 +66,6 @@ public class User {
         this.gender = gender;
     }
 
-    @JsonProperty("user_age")
     public int getAge() {
         return age;
     }
@@ -72,7 +74,6 @@ public class User {
         this.age = age;
     }
 
-    @JsonProperty("user_email")
     public String getEmail() {
         return email;
     }
@@ -81,7 +82,6 @@ public class User {
         this.email = email;
     }
 
-    @JsonProperty("user_phone")
     public String getPhone() {
         return phone;
     }

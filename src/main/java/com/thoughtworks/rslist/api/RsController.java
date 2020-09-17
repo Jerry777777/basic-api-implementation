@@ -3,7 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.exception.CommonError;
 import com.thoughtworks.rslist.exception.InvalidIndexException;
-import com.thoughtworks.rslist.exception.InvalidPostParam;
+import com.thoughtworks.rslist.exception.InvalidPostParamException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.service.RsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +44,9 @@ public class RsController {
     }
 
     @PostMapping("/rs/add")
-    public ResponseEntity<String> addOneEvent(@RequestBody @Validated RsEvent rsEvent, BindingResult result) throws InvalidPostParam {
+    public ResponseEntity<String> addOneEvent(@RequestBody @Validated RsEvent rsEvent, BindingResult result) throws InvalidPostParamException {
         if (result.hasErrors())
-            throw new InvalidPostParam();
+            throw new InvalidPostParamException();
         int addIndex = rsService.addOneEvent(rsEvent);
         return ResponseEntity.created(null)
                 .header("addIndex", String.valueOf(addIndex)).build();
