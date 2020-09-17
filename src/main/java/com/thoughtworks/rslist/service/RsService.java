@@ -27,14 +27,14 @@ public class RsService {
         List<RsEvent> rsList = rsRepository.getRsList();
         int size = rsList.size();
         if (start < 1 || start > size || end < 1 || end > size)
-            throw new InvalidRequestParamException("invalid request param");
+            throw new InvalidRequestParamException();
         return rsRepository.getRsList().subList(start - 1, end);
     }
 
     public RsEvent getOne(int index) throws InvalidIndexException {
         List<RsEvent> rsList = rsRepository.getRsList();
         if (index < 0 || index > rsList.size())
-            throw new InvalidIndexException("invalid index");
+            throw new InvalidIndexException();
         return rsRepository.getOne(index);
     }
 

@@ -21,10 +21,12 @@ public class RsController {
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getList(@RequestParam(required = false) Integer start,
                                                  @RequestParam(required = false) Integer end) throws InvalidRequestParamException {
-        if (start > end)
-            throw new InvalidRequestParamException("invalid request param");
+
         if (null == start || null == end) {
             return ResponseEntity.ok().body(rsService.getAllRs());
+        }
+        if (start > end) {
+            throw new InvalidRequestParamException();
         }
         return ResponseEntity.ok().body(rsService.getSubRs(start, end));
     }
@@ -32,7 +34,7 @@ public class RsController {
     @GetMapping("/rs/{index}")
     public ResponseEntity<RsEvent> getOne(@PathVariable int index) throws InvalidIndexException {
         if (index < 0)
-            throw new InvalidIndexException("invalid index");
+            throw new InvalidIndexException();
         if (index > 0)
             return ResponseEntity.ok().body(rsService.getOne(index));
         else
@@ -47,7 +49,7 @@ public class RsController {
     }
 
     @PutMapping("/rs/update/{id}")
-    public ResponseEntity <String> updateRsEventById(@PathVariable int id, @RequestBody RsEvent rsEventUpdate) {
+    public ResponseEntity<String> updateRsEventById(@PathVariable int id, @RequestBody RsEvent rsEventUpdate) {
         rsService.updateEventById(id, rsEventUpdate);
         return ResponseEntity.ok().body(null);
     }
@@ -59,7 +61,7 @@ public class RsController {
     }
 
     @ExceptionHandler({InvalidRequestParamException.class, InvalidIndexException.class})
-    public ResponseEntity exceptionHandler(Exception ex){
+    public ResponseEntity exceptionHandler(Exception ex) {
         CommonError commonError = new CommonError();
         String errorMessage = ex.getMessage();
         commonError.setError(errorMessage);
