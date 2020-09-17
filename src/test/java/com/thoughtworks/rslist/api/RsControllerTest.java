@@ -210,39 +210,50 @@ class RsControllerTest {
     @Test
     @Order(9)
     void should_return_bad_request_when_add_new_event_keyWord_is_empty() throws Exception {
-        RsEvent rsEvent = new RsEvent(4, "第四条事件", null,
+        /*RsEvent rsEvent = new RsEvent(4, "第四条事件", null,
                 new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":\"第四条事件\",\"keyWord\":null," +
+                "\"user\":{\"user_name\":\"userA\",\"user_gender\":\"MALE\",\"user_age\":39," +
+                "\"user_email\":\"A@aaa.com\",\"user_phone\":\"11234567890\"}}";
 
         mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error", is("invalid param")));
     }
 
     @Test
     @Order(10)
     void should_return_bad_request_when_add_new_event_user_is_empty() throws Exception {
-        RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际", null);
+        /*RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际", null);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":null,\"keyWord\":\"国际\"," +
+                "\"user\":null}";
 
         mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error", is("invalid param")));
     }
 
     @Test
     @Order(11)
     void should_return_bad_request_when_add_new_event_user_name_is_empty() throws Exception {
-        RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际",
+        /*RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际",
                 new User(null, Gender.MALE, 43, "D@aaa.com", "11234567893"));
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String rsEventJson = objectMapper.writeValueAsString(rsEvent);
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":\"第四条事件\",\"keyWord\":null," +
+                "\"user\":{\"user_name\":null,\"user_gender\":\"MALE\",\"user_age\":39," +
+                "\"user_email\":\"A@aaa.com\",\"user_phone\":\"11234567890\"}}";
 
         mockMvc.perform(post("/rs/add").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error", is("invalid param")));
     }
 
     @Test
