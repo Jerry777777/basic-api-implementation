@@ -19,7 +19,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
     @PostMapping("/rs/addUser")
     public ResponseEntity register(@RequestBody @Validated User user, BindingResult result) throws InvalidUserParamException {
         if (result.hasErrors())
@@ -29,7 +28,7 @@ public class UserController {
                 .header("addIndex", String.valueOf(addIndex)).build();
     }
 
-    @GetMapping("/rs/users")
+    @GetMapping("/users")
     public ResponseEntity<List<User>> getUserList(){
         return ResponseEntity.ok().body(userService.getAllUsers());
     }

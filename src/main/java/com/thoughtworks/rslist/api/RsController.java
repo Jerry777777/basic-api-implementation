@@ -1,13 +1,11 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.RsEvent;
-import com.thoughtworks.rslist.exception.CommonError;
 import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidPostParamException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.service.RsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -23,13 +21,10 @@ public class RsController {
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getList(@RequestParam(required = false) Integer start,
                                                  @RequestParam(required = false) Integer end) throws InvalidRequestParamException {
-
-        if (null == start || null == end) {
+        if (null == start || null == end)
             return ResponseEntity.ok().body(rsService.getAllRs());
-        }
-        if (start > end) {
+        if (start > end)
             throw new InvalidRequestParamException();
-        }
         return ResponseEntity.ok().body(rsService.getSubRs(start, end));
     }
 
@@ -43,7 +38,7 @@ public class RsController {
             return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping("/rs/add")
+    @PostMapping("/rs/event")
     public ResponseEntity<String> addOneEvent(@RequestBody @Validated RsEvent rsEvent, BindingResult result) throws InvalidPostParamException {
         if (result.hasErrors())
             throw new InvalidPostParamException();
@@ -62,13 +57,5 @@ public class RsController {
     public ResponseEntity<String> deleteRsEventById(@PathVariable int id) {
         rsService.deleteEventById(id);
         return ResponseEntity.ok().body(null);
-    }
-
-    @ExceptionHandler({InvalidRequestParamException.class, InvalidIndexException.class})
-    public ResponseEntity exceptionHandler(Exception ex) {
-        CommonError commonError = new CommonError();
-        String errorMessage = ex.getMessage();
-        commonError.setError(errorMessage);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonError);
     }
 }

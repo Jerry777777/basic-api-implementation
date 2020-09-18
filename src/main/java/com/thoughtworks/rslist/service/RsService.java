@@ -1,3 +1,4 @@
+
 package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.domain.RsEvent;

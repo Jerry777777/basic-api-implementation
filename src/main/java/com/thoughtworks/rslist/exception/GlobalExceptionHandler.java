@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    private static final String INVALID_RS_EVENT_REQUEST_PARAM_ERROR_MESSAGE = "invalid request param";
-    private static final String INVALID_RS_EVENT_INDEX_ERROR_MESSAGE = "invalid index";
-    private static final String INVALID_RS_EVENT_POST_PARAM_ERROR_MESSAGE = "invalid param";
+    private static final String INVALID_RSEVENT_REQUEST_PARAM_ERROR_MESSAGE = "invalid request param";
+    private static final String INVALID_RSEVENT_INDEX_ERROR_MESSAGE = "invalid index";
+    private static final String INVALID_RSEVENT_POST_PARAM_ERROR_MESSAGE = "invalid param";
     private static final String INVALID_USER_POST_PARAM_ERROR_MESSAGE = "invalid user";
 
     private static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -22,11 +22,11 @@ public class GlobalExceptionHandler {
         CommonError commonError = new CommonError();
         String errorMessage = null;
         if (ex instanceof InvalidRequestParamException)
-            errorMessage = INVALID_RS_EVENT_REQUEST_PARAM_ERROR_MESSAGE;
+            errorMessage = INVALID_RSEVENT_REQUEST_PARAM_ERROR_MESSAGE;
         else if (ex instanceof InvalidIndexException)
-            errorMessage = INVALID_RS_EVENT_INDEX_ERROR_MESSAGE;
+            errorMessage = INVALID_RSEVENT_INDEX_ERROR_MESSAGE;
         else if (ex instanceof InvalidPostParamException)
-            errorMessage = INVALID_RS_EVENT_POST_PARAM_ERROR_MESSAGE;
+            errorMessage = INVALID_RSEVENT_POST_PARAM_ERROR_MESSAGE;
         else if (ex instanceof InvalidUserParamException)
             errorMessage = INVALID_USER_POST_PARAM_ERROR_MESSAGE;
         commonError.setError(errorMessage);

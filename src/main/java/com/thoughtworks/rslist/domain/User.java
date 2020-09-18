@@ -42,7 +42,9 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return age == user.age &&
-                Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone);
+                Objects.equals(name, user.name) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(phone, user.phone);
     }
 
     @Override
