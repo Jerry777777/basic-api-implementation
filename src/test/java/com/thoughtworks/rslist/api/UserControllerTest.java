@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -33,7 +34,7 @@ class UserControllerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @AfterEach
-    void clearData(){
+    void clearData() {
         userRepository.deleteAll();
     }
 
@@ -142,5 +143,53 @@ class UserControllerTest {
 
         mockMvc.perform(get("/findUserById/{id}", 1))
                 .andExpect(jsonPath("$.userName", is(user.getName())));
+    }
+
+    @Test
+    void should_bad_request_in_find_one_user_by_id_when_id_is_empty() throws Exception {
+        User user = new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890");
+        String userString = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/user").content(userString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/findUserById/{id}", nullValue()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_return_empty_message_in_get_one_when_not_find() throws Exception {
+        User user = new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890");
+        String userString = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/user").content(userString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/findUserById/{id}", 2))
+                .andExpect(header().string("message", "user not found"));
+    }
+
+    @Test
+    void should_delete_user_by_id() throws Exception {
+        User user = new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890");
+        String userString = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/user").content(userString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(delete("/deleteUserById/{id}", 1))
+                .andExpect(header().string("message", "user deleted"));
+    }
+
+    @Test
+    void should_return_user_not_found_in_delete_when_user_not_exist() throws Exception {
+        User user = new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890");
+        String userString = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/user").content(userString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(delete("/deleteUserById/{id}", 2))
+                .andExpect(header().string("message", "user not found"));
     }
 }
