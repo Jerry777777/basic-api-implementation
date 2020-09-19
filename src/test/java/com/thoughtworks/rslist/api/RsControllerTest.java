@@ -165,4 +165,15 @@ class RsControllerTest {
         assertEquals(1, events.size());
         assertEquals(1, events.get(0).getId());
     }
+
+    @Test
+    void should_add_new_event_when_user_not_exist() throws Exception {
+        UserPO saved = userRepository.save(UserPO.builder()
+                .userName("user 0").age(20).gender(Gender.MALE).email("0@a.com").phone("11234567890").voteNum(5).build());
+
+        String rsEventJson = "{\"eventName\":\"第四条事件\",\"keyWord\":\"社会\"," +"\"userId\":" + 2 +"}";
+
+        mockMvc.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

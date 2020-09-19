@@ -26,7 +26,7 @@ public class UserController {
                 .header("userId", String.valueOf(userId)).build();
     }
 
-    @GetMapping("/findUserById/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity findUserById(@PathVariable() int id) {
         UserPO user = userService.findUserById(id);
         if (user == null) {
