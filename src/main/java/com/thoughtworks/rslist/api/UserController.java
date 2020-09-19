@@ -2,15 +2,13 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.InvalidUserParamException;
+import com.thoughtworks.rslist.po.UserPO;
 import com.thoughtworks.rslist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,7 +27,22 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getUserList(){
+    public ResponseEntity<List<User>> getUserList() {
         return ResponseEntity.ok().body(userService.getAllUsers());
+    }
+
+    @PostMapping("/user")
+    public ResponseEntity registerUser(@RequestBody @Validated User user, BindingResult result) throws InvalidUserParamException {
+        if (result.hasErrors())
+            throw new InvalidUserParamException();
+        int userId = userService.register(user);
+        return ResponseEntity.created(null)
+                .header("userId", String.valueOf(userId)).build();
+    }
+
+    @GetMapping("/findUserById/{id}")
+    public ResponseEntity findUserById(@PathVariable(required = true) int id){
+        UserPO user = userService.findUserById(id);
+        return ResponseEntity.ok().body(user);
     }
 }

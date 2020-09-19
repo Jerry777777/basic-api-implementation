@@ -27,6 +27,7 @@ public class User {
     @Pattern(regexp = "1\\d{10}")
     @JsonProperty("user_phone")
     private String phone;
+    private int voteNum = 10;
 
     public User(String name, Gender gender, int age, String email, String phone) {
         this.name = name;
