@@ -2,11 +2,9 @@
 package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.domain.RsEvent;
-import com.thoughtworks.rslist.domain.User;
-import com.thoughtworks.rslist.exception.InvalidIndexException;
-import com.thoughtworks.rslist.exception.InvalidRequestParamException;
-import com.thoughtworks.rslist.repositories.RsEventRepository;
-import com.thoughtworks.rslist.repositories.UserListRepository;
+import com.thoughtworks.rslist.po.RsEventPO;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,39 +16,23 @@ public class RsService {
     private RsEventRepository rsRepository;
 
     @Autowired
-    private UserListRepository userRepository;
+    private UserRepository userRepository;
 
-    public List<RsEvent> getAllRs() {
-        return rsRepository.getRsList();
+    public int addEvent(RsEvent rsEvent){
+        if (!userRepository.findById(rsEvent.getUserId()).isPresent())
+            return 0;
+
+        RsEventPO rsEventEntity = RsEventPO.builder().eventName(rsEvent.getEventName())
+                .keyword(rsEvent.getKeyWord()).userId(rsEvent.getUserId()).build();
+
+        return rsRepository.save(rsEventEntity).getId();
     }
 
-    public List<RsEvent> getSubRs(int start, int end) throws InvalidRequestParamException {
-        List<RsEvent> rsList = rsRepository.getRsList();
-        int size = rsList.size();
-        if (start < 1 || start > size || end < 1 || end > size)
-            throw new InvalidRequestParamException();
-        return rsRepository.getRsList().subList(start - 1, end);
+    public List<RsEventPO> findAll() {
+        return rsRepository.findAll();
     }
 
-    public RsEvent getOne(int index) throws InvalidIndexException {
-        List<RsEvent> rsList = rsRepository.getRsList();
-        if (index < 0 || index > rsList.size())
-            throw new InvalidIndexException();
-        return rsRepository.getOne(index);
-    }
-
-    public int addOneEvent(RsEvent rsEvent) {
-        User user = rsEvent.getUser();
-        if (!userRepository.isExist(user))
-            userRepository.addUser(user);
-        return rsRepository.addEvent(rsEvent);
-    }
-
-    public void updateEventById(int id, RsEvent rsEventUpdate) {
-        rsRepository.updateEventById(id, rsEventUpdate);
-    }
-
-    public void deleteEventById(int id) {
-        rsRepository.deleteEventById(id);
+    public RsEventPO findById(int id) {
+       return rsRepository.findById(id);
     }
 }

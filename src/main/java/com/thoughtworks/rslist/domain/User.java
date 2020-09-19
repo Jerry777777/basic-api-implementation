@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.util.Objects;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @NotNull
     @Size(max = 8)

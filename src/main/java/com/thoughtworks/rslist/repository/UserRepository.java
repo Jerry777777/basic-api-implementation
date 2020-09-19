@@ -13,4 +13,7 @@ public interface UserRepository extends CrudRepository<UserPO, Integer> {
 
     @Transactional
     int deleteUserEntityById(Integer id);
+
+    @Override
+    void deleteAll();
 }
