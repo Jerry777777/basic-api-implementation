@@ -1,0 +1,292 @@
+package com.thoughtworks.rslist.api;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.domain.Gender;
+import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.repositories.RsEventRepository;
+import com.thoughtworks.rslist.repositories.UserListRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class RsControllerTest {
+    @Autowired
+    MockMvc mockMvc;
+
+    @Autowired
+    RsEventRepository rsEventRepository;
+
+    @Autowired
+    UserListRepository userListRepository;
+
+    @BeforeEach
+    void initData(){
+        List<RsEvent> rsList = rsEventRepository.getRsList();
+        rsList.clear();
+        rsList.add(new RsEvent(1, "第一条事件", "经济",
+                new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890")));
+        rsList.add(new RsEvent(2, "第二条事件", "社会",
+                new User("userB", Gender.FEMALE, 32, "B@aaa.com", "11234567891")));
+        rsList.add(new RsEvent(3, "第三条事件", "民生",
+                new User("userC", Gender.Transgender, 21, "C@aaa.com", "11234567892")));
+
+        List<User> userList = userListRepository.getUserList();
+        userList.clear();
+        userList.add(new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
+        userList.add(new User("userB", Gender.FEMALE, 32, "B@aaa.com", "11234567891"));
+        userList.add(new User("userC", Gender.Transgender, 21, "C@aaa.com", "11234567892"));
+    }
+
+    @Test
+    void should_get_list() throws Exception {
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("经济")))
+                .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("社会")))
+                .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
+                .andExpect(jsonPath("$[2].keyWord", is("民生")))
+                .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_get_one() throws Exception {
+        mockMvc.perform(get("/rs/1"))
+                .andExpect(jsonPath("$.eventName", is("第一条事件")))
+                .andExpect(jsonPath("$.keyWord", is("经济")))
+                .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/2"))
+                .andExpect(jsonPath("$.eventName", is("第二条事件")))
+                .andExpect(jsonPath("$.keyWord", is("社会")))
+                .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/3"))
+                .andExpect(jsonPath("$.eventName", is("第三条事件")))
+                .andExpect(jsonPath("$.keyWord", is("民生")))
+                .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_get_sub_list() throws Exception {
+        mockMvc.perform(get("/rs/list?start=1&end=2"))
+                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("经济")))
+                .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("社会")))
+                .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/list?start=2&end=3"))
+                .andExpect(jsonPath("$[0].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("社会")))
+                .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].eventName", is("第三条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("民生")))
+                .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/list?start=1&end=3"))
+                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("经济")))
+                .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("社会")))
+                .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
+                .andExpect(jsonPath("$[2].keyWord", is("民生")))
+                .andExpect(jsonPath("$[2]", not(hasKey("user"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_add_one_event_with_new_user() throws Exception {
+        /*RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际",
+                new User("UserD", Gender.MALE, 43, "D@aaa.com", "11234567893"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":\"第四条事件\",\"keyWord\":\"国际\"," +
+                "\"user\":{\"user_name\":\"userD\",\"user_gender\":\"MALE\",\"user_age\":43," +
+                "\"user_email\":\"D@aaa.com\",\"user_phone\":\"11234567893\"}}";
+
+        mockMvc.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("addIndex", "4"));
+
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(4)));
+
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("经济")))
+                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("社会")))
+                .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
+                .andExpect(jsonPath("$[2].keyWord", is("民生")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_update_one_event() throws Exception {
+        int reId = 1;
+        RsEvent rsEvent = new RsEvent(1, "第一条事件", "教育", null);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventString = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(put("/rs/update/{id}", reId).content(rsEventString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/rs/1"))
+                .andExpect(jsonPath("$.eventName", is("第一条事件")))
+                .andExpect(jsonPath("$.keyWord", is("教育")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_delete_one_event() throws Exception {
+        int rsId = 1;
+        mockMvc.perform(delete("/rs/delete/{id}", rsId))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(jsonPath("$[0].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("社会")))
+                .andExpect(jsonPath("$[1].eventName", is("第三条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("民生")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_add_one_event_with_exited_user() throws Exception {
+        /*RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际",
+                new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":\"第四条事件\",\"keyWord\":\"国际\"," +
+                "\"user\":{\"user_name\":\"userA\",\"user_gender\":\"MALE\",\"user_age\":39," +
+                "\"user_email\":\"A@aaa.com\",\"user_phone\":\"11234567890\"}}";
+
+        mockMvc.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("经济")))
+                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("社会")))
+                .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
+                .andExpect(jsonPath("$[2].keyWord", is("民生")))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(3)));
+    }
+
+    @Test
+    void should_return_bad_request_when_add_new_event_eventName_is_empty() throws Exception {
+        /*RsEvent rsEvent = new RsEvent(4, null, "国际",
+                new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":null,\"keyWord\":\"国际\"," +
+                "\"user\":{\"user_name\":\"userA\",\"user_gender\":\"MALE\",\"user_age\":39," +
+                "\"user_email\":\"A@aaa.com\",\"user_phone\":\"11234567890\"}}";
+
+        mockMvc.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+    }
+
+    @Test
+    void should_return_bad_request_when_add_new_event_keyWord_is_empty() throws Exception {
+        /*RsEvent rsEvent = new RsEvent(4, "第四条事件", null,
+                new User("userA", Gender.MALE, 39, "A@aaa.com", "11234567890"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":\"第四条事件\",\"keyWord\":null," +
+                "\"user\":{\"user_name\":\"userA\",\"user_gender\":\"MALE\",\"user_age\":39," +
+                "\"user_email\":\"A@aaa.com\",\"user_phone\":\"11234567890\"}}";
+
+        mockMvc.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error", is("invalid param")));
+    }
+
+    @Test
+    void should_return_bad_request_when_add_new_event_user_is_empty() throws Exception {
+        /*RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际", null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":null,\"keyWord\":\"国际\"," +
+                "\"user\":null}";
+
+        mockMvc.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error", is("invalid param")));
+    }
+
+    @Test
+    void should_return_bad_request_when_add_new_event_user_name_is_empty() throws Exception {
+        /*RsEvent rsEvent = new RsEvent(4, "第四条事件", "国际",
+                new User(null, Gender.MALE, 43, "D@aaa.com", "11234567893"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String rsEventJson = objectMapper.writeValueAsString(rsEvent);*/
+
+        String rsEventJson = "{\"id\":4,\"eventName\":\"第四条事件\",\"keyWord\":null," +
+                "\"user\":{\"user_name\":null,\"user_gender\":\"MALE\",\"user_age\":39," +
+                "\"user_email\":\"A@aaa.com\",\"user_phone\":\"11234567890\"}}";
+
+        mockMvc.perform(post("/rs/event").content(rsEventJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error", is("invalid param")));
+    }
+
+    @Test
+    void should_return_400_when_get_sub_list_start_less_than_end() throws Exception {
+        mockMvc.perform(get("/rs/list?start=2&end=1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @Test
+    void should_return_400_when_get_sub_list_start_out_of_bound() throws Exception {
+        mockMvc.perform(get("/rs/list?start=5&end=1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @Test
+    void should_return_400_when_get_sub_list_end_out_of_bound() throws Exception {
+        mockMvc.perform(get("/rs/list?start=1&end=7"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @Test
+    void should_return_400_when_get_one_index_out_of_bound() throws Exception {
+        mockMvc.perform(get("/rs/7"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid index")));
+    }
+}
