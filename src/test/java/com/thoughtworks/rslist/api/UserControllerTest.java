@@ -6,7 +6,7 @@ import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.po.RsEventPO;
 import com.thoughtworks.rslist.po.UserPO;
 import com.thoughtworks.rslist.repository.RsEventRepository;
-import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.repository.UserEntityRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,17 +29,17 @@ class UserControllerTest {
     MockMvc mockMvc;
 
     @Autowired
-    UserRepository userRepository;
+    UserEntityRepository userEntityRepository;
 
     @Autowired
     RsEventRepository rsEventRepository;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @AfterEach
+    @AfterEach()
     void clearData() {
         rsEventRepository.deleteAll();
-        userRepository.deleteAll();
+        userEntityRepository.deleteAll();
     }
 
     @Test
@@ -108,7 +106,7 @@ class UserControllerTest {
         mockMvc.perform(post("/user").content(userString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
-        List<UserPO> users = userRepository.findAll();
+        List<UserPO> users = userEntityRepository.findAll();
 
         assertEquals(1, users.size());
         assertEquals("userA", users.get(0).getUserName());
@@ -152,15 +150,15 @@ class UserControllerTest {
 
     @Test
     void should_delete_user_by_id() throws Exception {
-        UserPO savedUser = userRepository.save(UserPO.builder().userName("user 0").age(30).gender(Gender.MALE)
+        UserPO savedUser = userEntityRepository.save(UserPO.builder().userName("user 0").age(30).gender(Gender.MALE)
                 .email("A@B.com").phone("11234567890").build());
-        RsEventPO rsEventEntity = RsEventPO.builder().eventName("eventName")
+        RsEventPO rsEventPO = RsEventPO.builder().eventName("eventName")
                 .keyword("keyword").userPO(savedUser).build();
-        rsEventRepository.save(rsEventEntity);
+        rsEventRepository.save(rsEventPO);
 
         mockMvc.perform(delete("/user/{id}", savedUser.getId()))
                 .andExpect(status().isOk());
-        assertEquals(0, userRepository.findAll().size());
+        assertEquals(0, userEntityRepository.findAll().size());
         assertEquals(0, rsEventRepository.findAll().size());
     }
 

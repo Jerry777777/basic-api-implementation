@@ -2,21 +2,20 @@ package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.po.UserPO;
-import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.repository.UserEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @Service
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
+    UserEntityRepository userEntityRepository;
 
     public int register(User user) {
-        UserPO userPO = new UserPO().builder()
+        UserPO entity = new UserPO().builder()
                 .userName(user.getName())
                 .age(user.getAge())
                 .gender(user.getGender())
@@ -24,16 +23,16 @@ public class UserService {
                 .phone(user.getPhone())
                 .voteNum(user.getVoteNum())
                 .build();
-        UserPO saved = userRepository.save(userPO);
+        UserPO saved = userEntityRepository.save(entity);
         return saved.getId();
     }
 
     public UserPO findUserById(int id) {
-        return userRepository.findUserPOById(id);
+        return userEntityRepository.findUserEntityById(id);
     }
 
     @Transactional
     public int deleteUserById(int id) {
-        return userRepository.deleteUserEntityById(id);
+        return userEntityRepository.deleteUserEntityById(id);
     }
 }

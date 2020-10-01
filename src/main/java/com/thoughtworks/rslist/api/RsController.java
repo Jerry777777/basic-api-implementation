@@ -1,10 +1,10 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.po.RsEventPO;
 import com.thoughtworks.rslist.exception.InvalidIndexException;
 import com.thoughtworks.rslist.exception.InvalidPostParamException;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
-import com.thoughtworks.rslist.po.RsEventPO;
 import com.thoughtworks.rslist.service.RsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +21,7 @@ public class RsController {
 
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEventPO>> getList() throws InvalidRequestParamException {
-
-        return ResponseEntity.ok().body(rsService.findAll());
+            return ResponseEntity.ok().body(rsService.findAll());
     }
 
     @GetMapping("/rs/{id}")
@@ -44,10 +43,12 @@ public class RsController {
                 .header("eventId", String.valueOf(eventId)).build();
     }
 
-    @PutMapping("/rs/update/{id}")
-    public ResponseEntity<String> updateRsEventById(@PathVariable int id, @RequestBody RsEvent rsEventUpdate) {
-
-        return ResponseEntity.ok().body(null);
+    @PutMapping("/rs/{rsEventId}")
+    public ResponseEntity<RsEventPO> updateRsEventById(@PathVariable("rsEventId") int id, @RequestBody RsEvent rsEventUpdate) {
+        RsEventPO updatedRsEvent = rsService.updateById(id, rsEventUpdate);
+        if (updatedRsEvent == null)
+            return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().body(updatedRsEvent);
     }
 
     @DeleteMapping("/rs/delete/{id}")

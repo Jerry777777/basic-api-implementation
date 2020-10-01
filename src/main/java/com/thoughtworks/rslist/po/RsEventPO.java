@@ -1,11 +1,13 @@
 package com.thoughtworks.rslist.po;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -15,13 +17,23 @@ import javax.persistence.*;
 @Table(name = "rs_event")
 public class RsEventPO {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue()
     private Integer id;
     private String eventName;
     private String keyword;
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserEntity userEntity;*/
-    @ManyToOne()
+    @ManyToOne(targetEntity = UserPO.class)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserPO userPO;
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "rsEvent")
+    private List<VotePO> votes;
+
+    @JsonBackReference
+    public UserPO getUserPO() {
+        return userPO;
+    }
+
+    @JsonBackReference
+    public void setUserPO(UserPO userPO) {
+        this.userPO = userPO;
+    }
 }

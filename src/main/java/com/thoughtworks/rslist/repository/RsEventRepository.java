@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface RsEventRepository extends CrudRepository<RsEventPO, Integer> {
     List<RsEventPO> findAll();
-    RsEventPO findById(int id);
+    RsEventPO findRsEventEntityById(int id);
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "user")
 public class UserPO {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue()
     private Integer id;
     @Column(name = "name")
     private String userName;
@@ -26,6 +26,8 @@ public class UserPO {
     private String email;
     private String phone;
     private Integer voteNum;
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "userPO")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "userEntity")
     private List<RsEventPO> events;
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "rsEvent")
+    private List<VotePO> votes;
 }
